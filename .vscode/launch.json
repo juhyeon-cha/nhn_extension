@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Chrome에서 확장 프로그램 로드",
+      "url": "chrome://extensions/",
+      "runtimeArgs": ["--load-extension=${workspaceFolder}"]
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Edge에서 확장 프로그램 로드",
+      "url": "edge://extensions/",
+      "runtimeArgs": ["--load-extension=${workspaceFolder}"]
+    }
+  ]
+}

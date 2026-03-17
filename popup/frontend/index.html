@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PORT629</title>
+    </head>
+
+    <body>
+        <!-- 알림 발송 -->
+        <div style="
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 30px;
+        height: 30px;
+        padding: 9.5px 9.5px;
+        z-index: 99;">
+            <span id="sendDoorayAlarm" style="width: 30px; height: 30px; cursor: pointer;">
+                <svg class="ncui--icon-svg" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none"
+                    viewBox="0 0 20 20">
+                    <path fill="#aaa"
+                        d="m3.018 17.258 1.352-5.852a.63.63 0 0 1 .533-.48l7.557-.784c.214-.017.214-.338 0-.373l-7.557-.73a.59.59 0 0 1-.533-.462L3.018 2.742c-.124-.498.41-.907.872-.676l14.776 7.4a.623.623 0 0 1 0 1.103L3.89 17.934c-.462.23-.995-.178-.871-.676">
+                    </path>
+                </svg>
+            </span>
+        </div>
+
+        <!-- Payco메뉴 -->
+        <div id="menuContent" style="width: 400px;"></div>
+        <script src="./popup.js"></script>
+
+
+        <!-- 새로 고침 -->
+        <div style="
+        position: absolute;
+        top: 0px;
+        right: 49px;
+        width: 30px;
+        height: 30px;
+        padding: 9.5px 9.5px;
+        z-index: 99;">
+            <span style="width: 30px; height: 30px; cursor: pointer;" onclik="refresh()">
+                <svg class="ncui--icon-svg" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none"
+                    viewBox="0 0 20 20">
+                    <path fill="#aaa" fill-rule="evenodd"
+                        d="m10.5 9 2.068-2.068A4.002 4.002 0 0 0 6.127 9H4.084a6.002 6.002 0 0 1 9.902-3.486L16 3.5V9zm-.499 7a6 6 0 0 0 5.917-5h-2.043a4.002 4.002 0 0 1-6.442 2.067L9.5 11H4v5.5l2.015-2.015A5.98 5.98 0 0 0 10.001 16m6-6-.001.112v-.224z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </span>
+        </div>
+
+        <!-- 설정 -->
+        <div style="
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 30px;
+        height: 30px;
+        padding: 9.5px 9.5px;
+        z-index: 99;">
+            <span id="openOptions" style="width: 30px; height: 30px; cursor: pointer;">
+                <svg class="ncui--icon-svg" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none"
+                    viewBox="0 0 20 20">
+                    <path fill="#aaa" fill-rule="evenodd"
+                        d="M11 2H9v2.083a6 6 0 0 0-2.476 1.026L5.05 3.636 3.637 5.05l1.472 1.473A6 6 0 0 0 4.083 9H2v2h2.083a6 6 0 0 0 1.026 2.477L3.636 14.95l1.415 1.414 1.473-1.473A6 6 0 0 0 9 15.917V18h2v-2.083a6 6 0 0 0 2.476-1.026l1.473 1.473 1.414-1.414-1.472-1.473A6 6 0 0 0 15.917 11H18V9h-2.083a6 6 0 0 0-1.027-2.477l1.473-1.473-1.414-1.414-1.473 1.473A6 6 0 0 0 11 4.083zm-1 11.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </span>
+        </div>
+    </body>
+
+</html>

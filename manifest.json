@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "업무 도우미",
+  "version": "1.0",
+  "description": "구내식당 메뉴 조회·알림, 퍼플 타임 일괄 조정",
+  "action": {
+    "default_popup": "popup/frontend/index.html",
+    "default_icon": {
+      "16": "assets/port629_16.png",
+      "32": "assets/port629_32.png",
+      "48": "assets/port629_48.png",
+      "128": "assets/port629_128.png"
+    }
+  },
+  "options_page": "options/frontend/index.html",
+  "permissions": [
+    "storage",
+    "alarms",
+    "contextMenus",
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://menu.payco.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    },
+    {
+      "matches": [
+        "*://nharmony.nhnent.com/user/hrms/odm/attend/purpleTime.nhn*"
+      ],
+      "js": [
+        "content-purple-time.js"
+      ]
+    }
+  ]
+}
