@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "업무 도우미",
   "version": "1.0",
-  "description": "구내식당 메뉴 조회·알림, 퍼플 타임 일괄 조정",
+  "description": "구내식당 메뉴 조회·알림, 퍼플 타임 일괄 조정, 회의실 예약표 개선·빈 회의실 반복 조회",
   "action": {
     "default_popup": "popup/frontend/index.html",
     "default_icon": {
@@ -18,7 +18,8 @@
     "alarms",
     "contextMenus",
     "activeTab",
-    "scripting"
+    "scripting",
+    "notifications"
   ],
   "background": {
     "service_worker": "background.js",
@@ -35,10 +36,22 @@
     },
     {
       "matches": [
-        "*://nharmony.nhnent.com/user/hrms/odm/attend/purpleTime.nhn*"
+        "*://nharmony.nhncorp.com/user/hrms/odm/attend/purpleTime.nhn*"
       ],
       "js": [
         "content-purple-time.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://pt.nhncorp.com/*"
+      ],
+      "js": [
+        "room/model.js",
+        "content-room.js"
+      ],
+      "css": [
+        "content-room.css"
       ]
     }
   ]

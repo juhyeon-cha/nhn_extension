@@ -1,10 +1,18 @@
 import { registerMenuAlarm } from './menu-alarm/listener.js';
 import { sendMenuToDoory } from './menu-alarm/message.js';
 import { getSettings, fetchPaycoMenu } from './popup/message.js';
+import { handleRoomNotification } from './room/notifications.js';
 
 registerMenuAlarm();
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === 'roomNotificationPermission' || request.action === 'roomAvailable') {
+        handleRoomNotification(request, sender).then(
+            () => sendResponse({ ok: true }),
+            error => sendResponse({ ok: false, error: error.message })
+        );
+        return true;
+    }
     getSettings(request, sender, sendResponse);
     fetchPaycoMenu(request, sender, sendResponse);
     sendMenuToDoory(request, sender, sendResponse);
@@ -16,7 +24,7 @@ chrome.runtime.onInstalled.addListener(() => {
         id: 'purple-time-batch',
         title: '퍼플 타임 일괄 조정',
         contexts: ['page'],
-        documentUrlPatterns: ['*://nharmony.nhnent.com/user/hrms/odm/attend/purpleTime.nhn*']
+        documentUrlPatterns: ['*://nharmony.nhncorp.com/user/hrms/odm/attend/purpleTime.nhn*']
     });
 
     chrome.storage.local.get(['botName', 'textTemplate', 'doorayUrl', 'menuAlarmEnabled', 'packedOnly'], (result) => {

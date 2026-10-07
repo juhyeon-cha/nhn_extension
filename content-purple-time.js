@@ -7,7 +7,7 @@
 // 상수
 // ---------------------------------------------------------------------------
 
-const PURPLE_TIME_URL = 'nharmony.nhnent.com/user/hrms/odm/attend/purpleTime.nhn';
+const PURPLE_TIME_URL = 'nharmony.nhncorp.com/user/hrms/odm/attend/purpleTime.nhn';
 
 const STORAGE_KEYS = {
     remember: 'purpleTimeRemember',

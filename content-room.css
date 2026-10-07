@@ -1,0 +1,45 @@
+/* 페이지의 셀 크기와 클릭 영역을 바꾸지 않고 정시 경계를 그린다. */
+html[data-nhn-room] .time-table .tt-row__cells > .cell[data-nhn-hour] {
+    box-shadow: inset 1px 0 0 #d1d5db !important;
+}
+html[data-nhn-room] .time-table .tt-row__cells > .cell[data-nhn-meeting] {
+    background-image: linear-gradient(to bottom, var(--nhn-meeting-color) 0 70%, transparent 70% 100%) !important;
+}
+html[data-nhn-room] .tt-legend__box--others {
+    background-image: linear-gradient(to bottom, #b9d5fa 0 70%, transparent 70% 100%) !important;
+}
+#nhn-room-helper {
+    margin: 8px 0;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #172033;
+    font: 13px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+#nhn-room-helper * { box-sizing: border-box; }
+#nhn-room-helper h2 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
+#nhn-room-helper form { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 12px; }
+#nhn-room-helper label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+#nhn-room-helper input, #nhn-room-helper select, #nhn-room-helper button {
+    height: 32px;
+    border: 1px solid #94a3b8;
+    border-radius: 4px;
+    background: white;
+    color: #172033;
+    padding: 4px 8px;
+    font: inherit;
+}
+#nhn-room-helper input[type=number] { width: 90px; }
+#nhn-room-helper button { cursor: pointer; }
+#nhn-room-helper button[type=submit] { background: #2459a6; color: white; border-color: #2459a6; }
+#nhn-room-helper button:disabled { cursor: default; opacity: .5; }
+#nhn-room-helper :focus-visible { outline: 2px solid #2459a6; outline-offset: 2px; }
+#nhn-room-helper p { margin: 8px 0 0; }
+#nhn-room-helper [data-role=status][data-error] { color: #a51e2c; }
+#nhn-room-helper [data-role=results] {
+    display: flex; flex-wrap: wrap; gap: 4px 16px;
+    max-height: 100px; overflow-y: auto;
+    margin: 8px 0 0; padding: 0; list-style: none;
+}
+#nhn-room-helper [data-role=scope], #nhn-room-helper [data-role=hint] { color: #526071; font-size: 12px; }
