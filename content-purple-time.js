@@ -44,9 +44,8 @@ const SELECTOR = {
     restRegisterButtons: 'table > tbody > tr td button',
 };
 
-const CLICK_INTERVAL_MS = 200;
-/** 마지막 클릭 후 이 시간만큼 더 대기한 뒤 runAfterTableStable 예약 (마지막 클릭 처리 시간 확보) */
-const EXTRA_DELAY_AFTER_LAST_CLICK_MS = 250;
+/** TUI Calendar는 클릭을 300ms 뒤 확정하므로, 다음 클릭까지 그보다 길게 기다린다. */
+const CLICK_INTERVAL_MS = 400;
 /** 마지막 클릭 후 이 시간만큼 대기한 뒤 테이블 안정 검사 시작 (마지막 클릭의 DOM 반영 여유) */
 const DELAY_AFTER_LAST_CLICK_MS = 450;
 /** 클릭 후 테이블이 추가되는 시간을 기다리기: 행 수가 이 시간 동안 같으면 안정된 것으로 봄 */
@@ -86,7 +85,7 @@ function clickOption(selectEl, value) {
 
 /**
  * 요소 중앙 좌표로 마우스/포인터 이벤트 순서 발생.
- * 일부 환경에서는 .click()이 더 잘 동작하므로 마지막에 시도.
+ * 선택이 다시 해제되지 않도록 click 이벤트는 한 번만 보낸다.
  */
 function dispatchMouseClickAtElement(el) {
     if (!el) return;
@@ -109,7 +108,6 @@ function dispatchMouseClickAtElement(el) {
     el.dispatchEvent(new PointerEvent('pointerup', { ...commonUp, pointerType: 'mouse' }));
     el.dispatchEvent(new MouseEvent('mouseup', { ...commonUp }));
     el.dispatchEvent(new MouseEvent('click', { ...commonUp, detail: 1 }));
-    el.click();
 }
 
 // ---------------------------------------------------------------------------
@@ -118,16 +116,18 @@ function dispatchMouseClickAtElement(el) {
 
 const MODAL_HTML = `
     <div id="${ID.backdrop}"></div>
-    <div id="${ID.dialog}">
-        <h3>퍼플 타임 일괄 조정</h3>
+    <div id="${ID.dialog}" role="dialog" aria-modal="true" aria-labelledby="port629-pt-title">
+        <h3 id="port629-pt-title">퍼플 타임 일괄 조정</h3>
         <form id="${ID.form}">
-            <div class="port629-field">
-                <label>근무 시작</label>
-                <input type="text" id="${ID.workStart}" value="${DEFAULTS.workStart}" placeholder="${DEFAULTS.workStart}" maxlength="4" />
-            </div>
-            <div class="port629-field">
-                <label>근무 종료</label>
-                <input type="text" id="${ID.workEnd}" value="${DEFAULTS.workEnd}" placeholder="${DEFAULTS.workEnd}" maxlength="4" />
+            <div class="port629-time-row">
+                <div class="port629-field">
+                    <label for="${ID.workStart}">근무 시작</label>
+                    <input type="text" id="${ID.workStart}" value="${DEFAULTS.workStart}" placeholder="${DEFAULTS.workStart}" maxlength="4" />
+                </div>
+                <div class="port629-field">
+                    <label for="${ID.workEnd}">근무 종료</label>
+                    <input type="text" id="${ID.workEnd}" value="${DEFAULTS.workEnd}" placeholder="${DEFAULTS.workEnd}" maxlength="4" />
+                </div>
             </div>
             <div class="port629-field port629-check-row">
                 <label>
@@ -136,13 +136,15 @@ const MODAL_HTML = `
                 </label>
             </div>
             <div id="${ID.restFields}" class="port629-rest-fields" style="display:none;">
-                <div class="port629-field">
-                    <label>휴게 시작</label>
-                    <input type="text" id="${ID.restStart}" value="${DEFAULTS.restStart}" placeholder="${DEFAULTS.restStart}" maxlength="4" />
-                </div>
-                <div class="port629-field">
-                    <label>휴게 종료</label>
-                    <input type="text" id="${ID.restEnd}" value="${DEFAULTS.restEnd}" placeholder="${DEFAULTS.restEnd}" maxlength="4" />
+                <div class="port629-time-row">
+                    <div class="port629-field">
+                        <label for="${ID.restStart}">휴게 시작</label>
+                        <input type="text" id="${ID.restStart}" value="${DEFAULTS.restStart}" placeholder="${DEFAULTS.restStart}" maxlength="4" />
+                    </div>
+                    <div class="port629-field">
+                        <label for="${ID.restEnd}">휴게 종료</label>
+                        <input type="text" id="${ID.restEnd}" value="${DEFAULTS.restEnd}" placeholder="${DEFAULTS.restEnd}" maxlength="4" />
+                    </div>
                 </div>
             </div>
             <div class="port629-field port629-check-row">
@@ -163,32 +165,37 @@ const MODAL_CSS = `
     #${ID.modal} {
         position: fixed; inset: 0; z-index: 2147483647;
         display: flex; align-items: center; justify-content: center;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 16px; color: #172033;
+        font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+    #${ID.modal}, #${ID.modal} * { box-sizing: border-box; }
     #${ID.backdrop} {
         position: absolute; inset: 0;
         background: rgba(0,0,0,0.5);
     }
     #${ID.dialog} {
-        position: relative; background: #fff; border-radius: 8px; padding: 24px;
-        min-width: 320px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        position: relative; width: 360px; max-width: 100%;
+        max-height: 100%; overflow-y: auto;
+        padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 8px;
+        background: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    #${ID.dialog} h3 { margin: 0 0 20px; font-size: 18px; }
-    #${ID.form} .port629-field { margin-bottom: 14px; }
-    #${ID.form} .port629-field label { display: block; margin-bottom: 4px; font-size: 13px; color: #333; }
-    #${ID.form} .port629-field input[type="text"] {
-        width: 100%; box-sizing: border-box; padding: 8px 10px;
-        border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
+    #${ID.dialog} h3 { margin: 0 0 8px; color: inherit; font-size: 14px; font-weight: 700; line-height: inherit; }
+    #${ID.form} { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+    #${ID.form} .port629-time-row { display: flex; gap: 12px; }
+    #${ID.form} .port629-time-row .port629-field { flex: 1; min-width: 0; }
+    #${ID.form} .port629-field label { display: block; margin: 0 0 4px; font-size: 12px; }
+    #${ID.form} input[type="text"], #${ID.form} button {
+        height: 32px; padding: 4px 8px;
+        border: 1px solid #94a3b8; border-radius: 4px;
+        background: #fff; color: #172033; font: inherit;
     }
-    #${ID.form} .port629-check-row label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    #${ID.form} .port629-check-row input[type="checkbox"] { width: 18px; height: 18px; }
-    #${ID.restFields} { margin-top: 8px; padding-left: 4px; border-left: 3px solid #eee; }
-    #${ID.form} .port629-actions { margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end; }
-    #${ID.form} .port629-actions button { padding: 8px 16px; border-radius: 4px; font-size: 14px; cursor: pointer; border: none; }
-    #${ID.apply} { background: #1a73e8; color: #fff; }
-    #${ID.apply}:hover { background: #1557b0; }
-    #${ID.cancel} { background: #f1f3f4; color: #333; }
-    #${ID.cancel}:hover { background: #e8eaed; }
+    #${ID.form} input[type="text"] { width: 100%; font-size: 12px; }
+    #${ID.form} .port629-check-row label { display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; }
+    #${ID.form} input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: #2459a6; }
+    #${ID.form} .port629-actions { display: flex; gap: 12px; justify-content: flex-end; }
+    #${ID.form} button { cursor: pointer; }
+    #${ID.form} button[type="submit"] { background: #2459a6; color: #fff; border-color: #2459a6; }
+    #${ID.modal} :focus-visible { outline: 2px solid #2459a6; outline-offset: 2px; }
 `;
 
 function createModal() {
@@ -340,37 +347,30 @@ function runAfterTableStable(onComplete) {
 }
 
 /**
- * 요일 그리드 셀(날짜 칸) 중 weekday-daily-working-time이 보이는 것만 순차 클릭.
- * 한 번 클릭 후 CLICK_INTERVAL_MS 지난 뒤 다음 클릭 → 루프 겹침 없이 하나씩 실행.
- * 마지막 하나는 requestAnimationFrame으로 다음 프레임에 클릭 (이전 클릭 처리 직후 타이밍 이슈 완화).
- * 클릭 후 테이블 행 수가 안정될 때까지 기다린 뒤 onComplete 호출.
+ * 시작 시 보이는 근무일의 달력 위치를 기록하고, 매 클릭 직전에 현재 날짜 칸을 조회한다.
+ * 같은 달의 그리드 순서가 유지되는 동안, 선택 후 근무시간 표시가 숨겨져도 다음 날짜를 놓치지 않는다.
+ * 마지막 날짜도 같은 방식으로 클릭한 뒤 테이블 행 수가 안정될 때까지 기다린다.
  */
 function clickWeekdayGridDaysWithInterval(onComplete) {
-    const elements = getVisibleWeekdayGridDays();
-    if (elements.length === 0) {
+    const grids = [...document.querySelectorAll(SELECTOR.weekdayGridDay)];
+    const indexes = getVisibleWeekdayGridDays().map(el => grids.indexOf(el));
+    if (indexes.length === 0) {
         onComplete();
         return;
     }
-    const count = elements.length;
     let i = 0;
     function runNext() {
-        if (i >= count) {
+        if (i >= indexes.length) {
             setTimeout(() => runAfterTableStable(onComplete), DELAY_AFTER_LAST_CLICK_MS);
             return;
         }
-        const isLast = i === count - 1;
-        const el = isLast
-            ? (() => { const fresh = getVisibleWeekdayGridDays(); return fresh[fresh.length - 1]; })()
-            : elements[i];
-        if (isLast) {
-            requestAnimationFrame(() => {
-                if (el && document.contains(el)) dispatchMouseClickAtElement(el);
-                i += 1;
-                setTimeout(runNext, CLICK_INTERVAL_MS + EXTRA_DELAY_AFTER_LAST_CLICK_MS);
-            });
+        const currentGrids = document.querySelectorAll(SELECTOR.weekdayGridDay);
+        const el = currentGrids[indexes[i]];
+        if (currentGrids.length !== grids.length || !el || !getVisibleWeekdayGridDays().includes(el)) {
+            alert('달력의 날짜 상태가 바뀌어 일괄 조정을 중단했습니다. 선택된 날짜를 확인한 뒤 다시 시도해 주세요.');
             return;
         }
-        if (el && document.contains(el)) dispatchMouseClickAtElement(el);
+        dispatchMouseClickAtElement(el);
         i += 1;
         setTimeout(runNext, CLICK_INTERVAL_MS);
     }
